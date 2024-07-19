@@ -1,0 +1,19 @@
+---
+# tasks file for vector-role
+
+- name: Get Vector distrib
+  ansible.builtin.get_url:
+    url: "https://packages.timber.io/vector/{{ vector_version }}/vector_{{ vector_version }}-1_amd64.deb"
+    dest: "./vector-{{ vector_version }}.deb"
+- name: Install Vector
+  become: true
+  ansible.builtin.apt:
+    deb: "./vector-{{ vector_version }}.deb"
+    state: present
+- name: Edit config vector
+  become: true
+  ansible.builtin.template:
+    mode: 0755
+    src: templates/vector.j2
+    dest: /etc/vector/vector.yaml  
+  notify: Restart vector
