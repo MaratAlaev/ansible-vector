@@ -1,0 +1,11 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+      - name: Check validate config
+        command: vector validate
+        register: result
+        failed_when: result.rc != 0
