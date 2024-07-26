@@ -3,17 +3,39 @@
 
 - name: Get Vector distrib
   ansible.builtin.get_url:
+    validate_certs: false
     url: "https://packages.timber.io/vector/{{ vector_version }}/vector_{{ vector_version }}-1_amd64.deb"
     dest: "./vector-{{ vector_version }}.deb"
+  when: ansible_pkg_mgr == 'apt'
 - name: Install Vector
-  become: true
   ansible.builtin.apt:
     deb: "./vector-{{ vector_version }}.deb"
     state: present
+  when: ansible_pkg_mgr == 'apt'
+
 - name: Edit config vector
-  become: true
   ansible.builtin.template:
     mode: 0755
     src: templates/vector.j2
-    dest: /etc/vector/vector.yaml  
-  notify: Restart vector
+    dest: /etc/vector/vector.yaml
+  when: ansible_pkg_mgr == 'apt' 
+
+- name: Get Vector distrib
+  ansible.builtin.get_url:
+    validate_certs: false
+    url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-1.x86_64.rpm"
+    dest: "./vector-{{ vector_version }}.rpm"
+  when: ansible_pkg_mgr == 'dnf'
+- name: Install Vector
+  ansible.builtin.dnf:
+    disable_gpg_check: true
+    name: "./vector-{{ vector_version }}.rpm"
+    state: present
+  when: ansible_pkg_mgr == 'dnf'
+
+- name: Edit config vector
+  ansible.builtin.template:
+    mode: 0755
+    src: templates/vector.j2
+    dest: /etc/vector/vector.yaml
+  when: ansible_pkg_mgr == 'dnf' 

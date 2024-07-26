@@ -1,5 +1,7 @@
 galaxy_info:
   author: your name
+  role_name: vector  # if absent directory name hosting role is used instead
+  namespace: my
   description: your role description
   company: your company (optional)
 
